@@ -1,5 +1,6 @@
 package com.example.demo.services.auth.jwt;
 
+import com.example.demo.models.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -7,15 +8,22 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.UnsupportedJwtException;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Value;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Date;
 
-@Service
+@Component
+@Slf4j
 public class JwtIssuerServiceImp implements JwtIssuerService {
 
-    private String secretKey = "phi";
-    private Long expireTime = Long.valueOf(86400000);
+    @Value("${jwt.secretKey}")
+    private String secretKey;
+
+    @Value("${jwt.expireTime}")
+    private Long expireTime;
 
     @Override
     public String generateToken(UserDetails userDetails) {
@@ -26,7 +34,7 @@ public class JwtIssuerServiceImp implements JwtIssuerService {
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(loginTime)
                 .setExpiration(expiryTime)
-                .signWith(SignatureAlgorithm.ES256, secretKey)
+                .signWith(SignatureAlgorithm.HS512, secretKey)
                 .compact();
     }
 
@@ -45,13 +53,13 @@ public class JwtIssuerServiceImp implements JwtIssuerService {
             Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
             return true;
         } catch (MalformedJwtException ex) {
-            System.err.println("Invalid JWT token");
+            log.error("Invalid JWT token");
         } catch (ExpiredJwtException ex) {
-            System.err.println("Expired JWT token");
+            log.error("Expired JWT token");
         } catch (UnsupportedJwtException ex) {
-            System.err.println("Unsupported JWT token");
+            log.error("Unsupported JWT token");
         } catch (IllegalArgumentException ex) {
-            System.err.println("JWT claims string is empty");
+            log.error("JWT claims string is empty.");
         }
         return false;
     }

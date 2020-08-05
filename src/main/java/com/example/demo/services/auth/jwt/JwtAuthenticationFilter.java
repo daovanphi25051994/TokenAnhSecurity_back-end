@@ -29,14 +29,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
            String jwt = getJwtFromRequest(request);
            if (StringUtils.hasText(jwt) && jwtIssuerService.validateToken(jwt)){
                String username = jwtIssuerService.getUsernameFromJwt(jwt);
-               UserDetails userDetails = (UserDetails) userService.getByUsername(username);
+               UserDetails userDetails =  userService.getByUsername(username);
                if (userDetails != null){
                    UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                    authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                    SecurityContextHolder.getContext().setAuthentication(authenticationToken);
                }
            }
-       }catch (Exception ex){
+       } catch (Exception ex){
            logger.error("Failed on set user authentication", ex);
        }
         filterChain.doFilter(request, response);
