@@ -6,8 +6,10 @@ import com.example.demo.exceptions.CannotLoginException;
 import com.example.demo.exceptions.RegisterException;
 import com.example.demo.exceptions.UsernameExistedException;
 import com.example.demo.exceptions.UsernameOrPasswordInvalidException;
+import com.example.demo.models.AppRole;
 import com.example.demo.models.User;
 import com.example.demo.services.auth.AuthService;
+import com.example.demo.services.role.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -24,11 +26,15 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin("*")
 public class AuthAPI {
 
+    public static final Long ROLE_USER = 1L;
+
     private final AuthService authService;
+    private final RoleService roleService;
 
     @Autowired
-    public AuthAPI(AuthService authService) {
+    public AuthAPI(AuthService authService, RoleService roleService) {
         this.authService = authService;
+        this.roleService = roleService;
     }
 
     @PostMapping("/login")
@@ -44,6 +50,8 @@ public class AuthAPI {
 
     @PostMapping("/register")
     public User doRegister(@RequestBody User user) throws RegisterException, UsernameExistedException {
+        AppRole role = roleService.getById(ROLE_USER);
+        user.setAppRole(role);
         User newUser = authService.register(user);
         return newUser;
     }

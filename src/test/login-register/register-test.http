@@ -3,7 +3,7 @@ POST http://localhost:8080/api/auth/register
 Content-Type: application/json
 
 {
-  "username": "lebadat@gmail.com",
-  "password": "daovanphi2",
-  "confirm_password": "daovanphi2"
+  "username": "admin@gmail.com",
+  "password": "@dev1234",
+  "confirm_password": "@dev1234"
 }
