@@ -39,10 +39,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.cors();
         http.csrf().disable();
+        http.authorizeRequests().antMatchers("/api/admin/**").access("hasRole('ADMIN')");
+
         http.authorizeRequests().antMatchers(HttpMethod.OPTIONS).permitAll();
         http.authorizeRequests().antMatchers("/api/auth/**").permitAll()
                 .anyRequest().authenticated();
-        http.authorizeRequests().antMatchers("/api/admin/**").access("hasRole('ADMIN')");
 
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
