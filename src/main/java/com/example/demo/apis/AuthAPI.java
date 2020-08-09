@@ -21,6 +21,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @RestController
 @RequestMapping("/api/auth")
 @CrossOrigin("*")
@@ -51,7 +54,9 @@ public class AuthAPI {
     @PostMapping("/register")
     public User doRegister(@RequestBody User user) throws RegisterException, UsernameExistedException {
         AppRole role = roleService.getById(ROLE_USER);
-        user.setAppRole(role);
+        Set<AppRole> roles = new HashSet<>();
+        roles.add(role);
+        user.setAppRoles(roles);
         User newUser = authService.register(user);
         return newUser;
     }
